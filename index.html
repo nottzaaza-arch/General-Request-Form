@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamFlow | ระบบจัดการงานและแดชบอร์ดทีม</title>
+    
+    <!-- Google Fonts: Inter & Kanit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Kanit:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- App Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Decoration Grid & Gradients -->
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="grid-overlay"></div>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-chart-line-up"></i>
+                    <i class="fa-solid fa-square-kanban brand-sub-icon"></i>
+                </div>
+                <h2>TeamFlow</h2>
+            </div>
+            
+            <div class="user-role-card">
+                <span class="user-role-label">บทบาทปัจจุบัน</span>
+                <div class="user-selector-wrapper">
+                    <i class="fa-solid fa-circle-user select-icon"></i>
+                    <select id="userSelector" class="user-select">
+                        <option value="supervisor" selected>💼 หัวหน้างาน (ภาพรวม)</option>
+                        <option value="สมชาย">👤 สมชาย (ทีมงาน)</option>
+                        <option value="สมศรี">👤 สมศรี (ทีมงาน)</option>
+                        <option value="สมศักดิ์">👤 สมศักดิ์ (ทีมงาน)</option>
+                        <option value="สมพร">👤 สมพร (ทีมงาน)</option>
+                        <option value="สมใจ">👤 สมใจ (ทีมงาน)</option>
+                    </select>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-btn active" data-target="dashboardView" id="navDashboard">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>แดชบอร์ดภาพรวมทีม</span>
+                </button>
+                <button class="nav-btn" data-target="kanbanView" id="navKanban">
+                    <i class="fa-solid fa-columns"></i>
+                    <span>บอร์ดงาน (Kanban)</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <p>TeamFlow v1.0.0</p>
+                <span>ระบบจัดการงานระดับพรีเมียม</span>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-title">
+                    <h1 id="viewTitle">แดชบอร์ดภาพรวมทีม</h1>
+                    <p id="viewSubtitle" class="text-secondary">ดูภาระงาน สถิติ และความคืบหน้าของทุกคนในทีม</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="btnAddTaskHeader">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>มอบหมายงานใหม่</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard View (Supervisor Overview) -->
+            <section id="dashboardView" class="view-section active">
+                <!-- Metrics Container -->
+                <div class="metrics-grid">
+                    <div class="metric-card card-glow-indigo">
+                        <div class="metric-icon bg-soft-indigo text-indigo">
+                            <i class="fa-solid fa-clipboard-list"></i>
+                        </div>
+                        <div class="metric-data">
+                            <h3 id="metricTotal">0</h3>
+                            <p>งานทั้งหมดในทีม</p>
+                        </div>
+                    </div>
+                    <div class="metric-card card-glow-warning">
+                        <div class="metric-icon bg-soft-warning text-warning">
+                            <i class="fa-solid fa-spinner fa-spin-pulse"></i>
+                        </div>
+                        <div class="metric-data">
+                            <h3 id="metricInProgress">0</h3>
+                            <p>กำลังดำเนินการ</p>
+                        </div>
+                    </div>
+                    <div class="metric-card card-glow-info">
+                        <div class="metric-icon bg-soft-info text-info">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+                        <div class="metric-data">
+                            <h3 id="metricReview">0</h3>
+                            <p>รอตรวจทาน</p>
+                        </div>
+                    </div>
+                    <div class="metric-card card-glow-success">
+                        <div class="metric-icon bg-soft-success text-success">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <div class="metric-data">
+                            <h3 id="metricDone">0</h3>
+                            <p>เสร็จสิ้นแล้ว</p>
+                        </div>
+                    </div>
+                    <div class="metric-card card-glow-danger">
+                        <div class="metric-icon bg-soft-danger text-danger">
+                            <i class="fa-solid fa-clock-nine"></i>
+                        </div>
+                        <div class="metric-data">
+                            <h3 id="metricOverdue">0</h3>
+                            <p>เลยกำหนดส่ง</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secondary Charts & Workload Section -->
+                <div class="grid-2-col">
+                    <!-- Workload Distribution -->
+                    <div class="card panel-card">
+                        <div class="card-header">
+                            <div class="header-icon"><i class="fa-solid fa-users-gear text-indigo"></i></div>
+                            <h3>สัดส่วนภาระงานรายบุคคล</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="workload-list" id="workloadList">
+                                <!-- Populated dynamically by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Priority Overview & Filters -->
+                    <div class="card panel-card">
+                        <div class="card-header">
+                            <div class="header-icon"><i class="fa-solid fa-sliders text-warning"></i></div>
+                            <h3>ตัวกรองข้อมูลงาน</h3>
+                        </div>
+                        <div class="card-body filter-panel">
+                            <div class="filter-group">
+                                <label for="filterAssignee">ผู้รับผิดชอบ:</label>
+                                <select id="filterAssignee" class="form-control">
+                                    <option value="all">ทุกคนในทีม</option>
+                                    <option value="สมชาย">สมชาย</option>
+                                    <option value="สมศรี">สมศรี</option>
+                                    <option value="สมศักดิ์">สมศักดิ์</option>
+                                    <option value="สมพร">สมพร</option>
+                                    <option value="สมใจ">สมใจ</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="filterPriority">ระดับความสำคัญ:</label>
+                                <select id="filterPriority" class="form-control">
+                                    <option value="all">ทุกระดับความสำคัญ</option>
+                                    <option value="high">สูง (High)</option>
+                                    <option value="medium">ปานกลาง (Medium)</option>
+                                    <option value="low">ต่ำ (Low)</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="filterStatus">สถานะงาน:</label>
+                                <select id="filterStatus" class="form-control">
+                                    <option value="all">ทุกสถานะ</option>
+                                    <option value="todo">ต้องทำ (To Do)</option>
+                                    <option value="in_progress">กำลังทำ (In Progress)</option>
+                                    <option value="review">รอตรวจทาน (Under Review)</option>
+                                    <option value="done">เสร็จสิ้น (Done)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- All Tasks Table List -->
+                <div class="card data-table-card">
+                    <div class="card-header">
+                        <div class="header-icon"><i class="fa-solid fa-list-check text-success"></i></div>
+                        <h3>ตารางภาระงานของทีมทั้งหมด</h3>
+                    </div>
+                    <div class="card-body scrollable-x">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ชื่องาน</th>
+                                    <th>ผู้รับผิดชอบ</th>
+                                    <th>ระดับความสำคัญ</th>
+                                    <th>วันที่สร้าง</th>
+                                    <th>วันครบกำหนด</th>
+                                    <th>สถานะ</th>
+                                    <th>การจัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="allTasksTableBody">
+                                <!-- Populated dynamically by JS -->
+                            </tbody>
+                        </table>
+                        <div class="empty-state-container hidden" id="tableEmptyState">
+                            <i class="fa-solid fa-folder-open empty-icon"></i>
+                            <p>ไม่พบรายการงานที่ตรงตามเงื่อนไขการค้นหา</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Kanban View (Team Member View) -->
+            <section id="kanbanView" class="view-section">
+                <!-- User Kanban Header Note -->
+                <div id="kanbanRoleBanner" class="role-banner">
+                    <i class="fa-solid fa-circle-info banner-icon"></i>
+                    <p id="kanbanBannerText">กำลังแสดงบอร์ดงานส่วนบุคคลของ: <strong>หัวหน้างาน (ดูข้อมูลของทีมทั้งหมด)</strong></p>
+                </div>
+
+                <!-- Kanban Columns Container -->
+                <div class="kanban-board">
+                    <!-- Column 1: To Do -->
+                    <div class="kanban-column" id="colTodo" data-status="todo">
+                        <div class="column-header border-left-indigo">
+                            <div class="col-title-group">
+                                <span class="column-dot bg-indigo"></span>
+                                <h3>ต้องทำ</h3>
+                                <span class="task-count" id="countTodo">0</span>
+                            </div>
+                            <button class="btn-add-inline" data-status="todo" title="เพิ่มงานในหัวข้อนี้">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                        <div class="kanban-cards" id="cardsTodo">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Column 2: In Progress -->
+                    <div class="kanban-column" id="colInProgress" data-status="in_progress">
+                        <div class="column-header border-left-warning">
+                            <div class="col-title-group">
+                                <span class="column-dot bg-warning"></span>
+                                <h3>กำลังทำ</h3>
+                                <span class="task-count" id="countInProgress">0</span>
+                            </div>
+                            <button class="btn-add-inline" data-status="in_progress" title="เพิ่มงานในหัวข้อนี้">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                        <div class="kanban-cards" id="cardsInProgress">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Column 3: Under Review -->
+                    <div class="kanban-column" id="colReview" data-status="review">
+                        <div class="column-header border-left-info">
+                            <div class="col-title-group">
+                                <span class="column-dot bg-info"></span>
+                                <h3>รอตรวจ</h3>
+                                <span class="task-count" id="countReview">0</span>
+                            </div>
+                            <button class="btn-add-inline" data-status="review" title="เพิ่มงานในหัวข้อนี้">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                        <div class="kanban-cards" id="cardsReview">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Column 4: Done -->
+                    <div class="kanban-column" id="colDone" data-status="done">
+                        <div class="column-header border-left-success">
+                            <div class="col-title-group">
+                                <span class="column-dot bg-success"></span>
+                                <h3>เสร็จสิ้น</h3>
+                                <span class="task-count" id="countDone">0</span>
+                            </div>
+                            <button class="btn-add-inline" data-status="done" title="เพิ่มงานในหัวข้อนี้">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                        <div class="kanban-cards" id="cardsDone">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Task Modal (Create & Edit) -->
+    <div id="taskModal" class="modal">
+        <div class="modal-content glass-morphic animate-zoom">
+            <div class="modal-header">
+                <h3 id="modalTitle">มอบหมายงานใหม่</h3>
+                <button class="btn-close" id="btnCloseModal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="taskForm">
+                <input type="hidden" id="taskId">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="taskTitle" class="required">ชื่องาน:</label>
+                        <input type="text" id="taskTitle" class="form-control" placeholder="ระบุชื่องานที่ต้องการมอบหมาย..." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="taskDesc">รายละเอียดเพิ่มเติม:</label>
+                        <textarea id="taskDesc" class="form-control text-area" rows="3" placeholder="ระบุขอบเขตงาน รายละเอียด หรือรายละเอียดอื่นๆ..."></textarea>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label for="taskAssignee" class="required">ผู้รับผิดชอบ:</label>
+                            <select id="taskAssignee" class="form-control" required>
+                                <option value="" disabled selected>เลือกสมาชิก...</option>
+                                <option value="สมชาย">สมชาย</option>
+                                <option value="สมศรี">สมศรี</option>
+                                <option value="สมศักดิ์">สมศักดิ์</option>
+                                <option value="สมพร">สมพร</option>
+                                <option value="สมใจ">สมใจ</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="taskPriority" class="required">ระดับความสำคัญ:</label>
+                            <select id="taskPriority" class="form-control" required>
+                                <option value="low">ต่ำ (Low)</option>
+                                <option value="medium" selected>ปานกลาง (Medium)</option>
+                                <option value="high">สูง (High)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label for="taskStartDate" class="required">วันที่เริ่มงาน/มอบหมาย:</label>
+                            <input type="date" id="taskStartDate" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="taskDeadline" class="required">วันครบกำหนดส่ง (Deadline):</label>
+                            <input type="date" id="taskDeadline" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="taskStatus" class="required">สถานะ:</label>
+                        <select id="taskStatus" class="form-control" required>
+                            <option value="todo">ต้องทำ (To Do)</option>
+                            <option value="in_progress">กำลังทำ (In Progress)</option>
+                            <option value="review">รอตรวจทาน (Under Review)</option>
+                            <option value="done">เสร็จสิ้น (Done)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelModal">ยกเลิก</button>
+                    <button type="submit" class="btn btn-primary" id="btnSubmitModal">บันทึกงาน</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Task Detail Modal (View Only / Actions) -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content glass-morphic animate-zoom task-detail-modal">
+            <div class="modal-header">
+                <div class="detail-priority-tag" id="detailPriority">ด่วนมาก</div>
+                <button class="btn-close" id="btnCloseDetail"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <h2 id="detailTitle" class="detail-task-title">ชื่องานแสดงที่นี่</h2>
+                
+                <div class="detail-meta-grid">
+                    <div class="detail-meta-item">
+                        <span class="meta-label">ผู้รับผิดชอบ</span>
+                        <div class="meta-value">
+                            <i class="fa-solid fa-circle-user meta-icon"></i>
+                            <span id="detailAssignee">สมชาย</span>
+                        </div>
+                    </div>
+                    <div class="detail-meta-item">
+                        <span class="meta-label">สถานะงาน</span>
+                        <div class="meta-value">
+                            <span id="detailStatusBadge" class="status-badge">กำลังทำ</span>
+                        </div>
+                    </div>
+                    <div class="detail-meta-item">
+                        <span class="meta-label">วันที่มอบหมาย</span>
+                        <div class="meta-value">
+                            <i class="fa-solid fa-calendar-plus meta-icon text-secondary"></i>
+                            <span id="detailStartDate">01/01/2026</span>
+                        </div>
+                    </div>
+                    <div class="detail-meta-item">
+                        <span class="meta-label">วันกำหนดส่ง (Deadline)</span>
+                        <div class="meta-value">
+                            <i class="fa-solid fa-calendar-xmark meta-icon text-secondary" id="detailDeadlineIcon"></i>
+                            <span id="detailDeadline">05/01/2026</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4>รายละเอียดงาน:</h4>
+                    <div class="detail-description-box" id="detailDesc">
+                        ไม่มีคำอธิบายเพิ่มเติม
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger mr-auto" id="btnDeleteDetail"><i class="fa-solid fa-trash-can"></i> ลบงาน</button>
+                <button class="btn btn-secondary" id="btnEditDetail"><i class="fa-solid fa-pen-to-square"></i> แก้ไขงาน</button>
+                <button class="btn btn-primary" id="btnAcceptDetail">ปิด</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script loading -->
+    <script src="app.js"></script>
+</body>
+</html>
